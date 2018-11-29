@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { hot } from 'react-hot-loader'
 import 'bootstrap/dist/css/bootstrap.css'
 
 import './index.css'
@@ -60,4 +61,18 @@ const log: GrabbedProduct[] = [
 	product,
 ]
 
-ReactDOM.render(<App activeProduct={product} productsLog={log} />, document.getElementById('root'))
+const AppRoot = () => <App activeProduct={product} productsLog={log} />
+
+const Root = hot(module)(AppRoot)
+
+function renderApp() {
+	ReactDOM.render(<Root />, document.getElementById('root'))
+}
+
+document.addEventListener('DOMContentLoaded', renderApp, false)
+
+// Hot Module Replacement API
+declare const module: NodeModule & { hot: any }
+if (module.hot) {
+	module.hot.accept('./', renderApp)
+}
