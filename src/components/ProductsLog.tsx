@@ -1,58 +1,35 @@
 import React, { Component } from 'react'
-import { ListGroup, ListGroupItem, Button, Alert } from 'reactstrap'
+import { ListGroup } from 'reactstrap'
+import { observer } from 'mobx-react'
 
-import { GrabbedProduct, GrabStatus } from '../product'
+import ProductLogItem from './ProductLogItem'
+import { StoreModel } from '../models/Store'
+import { ProductAsin } from '../models/Product'
+import autobind from '../utils/autobind'
 
 export interface ProductsLogProps {
-	products?: GrabbedProduct[]
-	activeAsin?: string
-}
-
-const LoadingIcon = () => <b className='z-blink'>•</b>
-const WarningIcon = () => <>⚠️</>
-
-const LogItem = ({ product, isActive }: { product: GrabbedProduct; isActive?: boolean }) => {
-	const color =
-		product.status === GrabStatus.Queue
-			? 'info'
-			: product.isViewed
-			? undefined
-			: product.status === GrabStatus.Success
-			? 'success'
-			: 'warning'
-
-	const icon =
-		product.status === GrabStatus.Queue ? (
-			<LoadingIcon />
-		) : product.status !== GrabStatus.Success ? (
-			<WarningIcon />
-		) : null
-
-	const title = String((product.data && product.data.title) || '')
-	const label = title && <small className='mr-2'>{title.length > 21 ? title.substr(0, 20) + '…' : title}</small>
-
-	return (
-		<ListGroupItem color={color} active={isActive} action>
-			<code className='mr-2'>{product.asin}</code>
-			{label}
-			{icon}
-		</ListGroupItem>
-	)
+    store: StoreModel
 }
 
 export class ProductsLog extends Component<ProductsLogProps> {
-	render() {
-		const { products, activeAsin } = this.props
-		if (!products || !Array.isArray(products) || !products.length) return null
+    render() {
+        const { products, viewingProduct } = this.props.store
+        if (!products || !Array.isArray(products) || !products.length) return null
 
-		return (
-			<ListGroup flush>
-				{products.map((product) => (
-					<LogItem product={product} isActive={product.asin === activeAsin} />
-				))}
-			</ListGroup>
-		)
-	}
+        return (
+            <ListGroup className='mb-3' flush>
+                {products.map((product) => (
+                    <ProductLogItem key={product.asin} product={product} onClick={this.handleItemClick} />
+                ))}
+            </ListGroup>
+        )
+    }
+
+    @autobind
+    handleItemClick(e: React.MouseEvent, product: ProductAsin) {
+        const { store } = this.props
+        store.viewProduct(product)
+    }
 }
 
-export default ProductsLog
+export default observer(ProductsLog)

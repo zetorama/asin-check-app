@@ -2,7 +2,7 @@
 parser: typescript
 printWidth: 120
 tabWidth: 4
-useTabs: true
+useTabs: false
 semi: false
 singleQuote: true
 jsxSingleQuote: true
