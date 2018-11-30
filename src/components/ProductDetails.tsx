@@ -3,6 +3,7 @@ import { ListGroup, ListGroupItem, Button, Alert } from 'reactstrap'
 import { observer } from 'mobx-react'
 
 import { ProductStatus, ProductModel } from '../models/Product'
+import autobind from '../utils/autobind'
 
 const InfoItem = ({ label, children }: { label: string; children: React.ReactNode }) => (
     <ListGroupItem>
@@ -15,13 +16,15 @@ const EmptyValue = () => <>—</>
 
 export interface ProductProps {
     product: ProductModel
+    onRefresh?: (e: React.MouseEvent, product: ProductModel) => void
 }
 
 export class ProductDetails extends Component<ProductProps> {
     render() {
-        const { isLoading, asin, data, updatedOn } = this.props.product
+        const { onRefresh, product } = this.props
+        const { isLoading, asin, data, updatedOn } = product
 
-        const updated = updatedOn ? `${updatedOn.toLocaleDateString()} at ${updatedOn.toLocaleTimeString()}` : 'Unknown'
+        const updated = updatedOn || 'Unknown'
 
         return (
             <div className='well'>
@@ -35,13 +38,21 @@ export class ProductDetails extends Component<ProductProps> {
                     {data ? this.renderDetails() : this.renderExcuse()}
                     <InfoItem label='Updated On'>
                         <span className='mr-2'>{updated}</span>
-                        <Button color='primary' size='sm' disabled={isLoading} outline>
-                            Refresh
-                        </Button>
+                        {onRefresh && (
+                            <Button outline color='primary' size='sm' disabled={isLoading} onClick={this.handleRefresh}>
+                                Refresh
+                            </Button>
+                        )}
                     </InfoItem>
                 </ListGroup>
             </div>
         )
+    }
+
+    @autobind
+    handleRefresh(e: React.MouseEvent) {
+        const { onRefresh, product } = this.props
+        onRefresh && onRefresh(e, product)
     }
 
     renderTitle() {

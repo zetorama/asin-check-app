@@ -1,88 +1,42 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { hot } from 'react-hot-loader'
+import { onSnapshot } from 'mobx-state-tree'
 import 'bootstrap/dist/css/bootstrap.css'
 
 import './index.css'
 import App from './App'
 import createStore, { ProductSnapshot, ProductStatus } from './models'
+import Interval from './utils/Interval'
 
-const products: ProductSnapshot[] = [
-    {
-        asin: 'YVPB06XWZW',
-        createdOn: new Date(),
-        status: ProductStatus.Queue,
-    },
-    {
-        asin: 'ZWYVPB06XW',
-        createdOn: new Date(),
-        status: ProductStatus.Timeout,
-    },
-    {
-        asin: 'ZWaaPB06XW',
-        createdOn: new Date(),
-        status: ProductStatus.Nomatch,
-    },
-    {
-        asin: 'PB06XWZWYV',
-        createdOn: new Date(),
-        status: ProductStatus.Success,
-        data: {
-            title: 'Foo Bar',
-            categories: [],
-        },
-        isViewed: true,
-    },
-    {
-        asin: '6XWZWYVPB0',
-        createdOn: new Date(),
-        status: ProductStatus.Fail,
-        isViewed: true,
-    },
-    {
-        asin: 'B06XWZWYVP',
-        createdOn: new Date(),
-        data: {
-            categories: [
-                'Electronics',
-                'Computers & Accessories',
-                'Computer Accessories & Peripherals',
-                'Memory Cards',
-                'Micro SD Cards',
-            ],
-            dimensions: '0.6 x 0.4 x 0.6 inches',
-            rank: [
-                '#1 in Cell Phones & Accessories',
-                '#1 in Electronics > Cell Phones & Accessories',
-                '#1 in Cell Phones & Accessories > Cell Phone Accessories > Micro SD Cards',
-            ],
-            rating: '4.6 out of 5 stars',
-            title: 'Samsung 128GB 100MB/s (U3) MicroSD EVO Select Memory Card with Adapter (MB-ME128GA/AM)',
-        },
-        status: ProductStatus.Success,
-        updatedOn: new Date(),
-    },
-]
+// Setup store + infinite updates
+const store = createStore()
+const timer = new Interval(1000, () => {
+    const asins = store.loadingProducts.map((p) => p.asin)
+    if (!asins.length) {
+        timer.stop()
+        return
+    }
 
-let store = createStore({
-    products,
-    viewingProduct: products[1].asin,
+    store.fetchUpdates(asins)
+})
+onSnapshot(store, () => {
+    store.saveProductsLog()
+    timer.start()
 })
 
+console.info('DELETE ME: Store is window.S')
 Object.assign(window, { S: store })
 
+// Setup views
 const AppRoot = () => <App store={store} />
-
 const Root = hot(module)(AppRoot)
+const renderer = () => ReactDOM.render(<Root />, document.getElementById('root'))
 
-function renderApp() {
-    ReactDOM.render(<Root />, document.getElementById('root'))
-}
-
-document.addEventListener('DOMContentLoaded', renderApp, false)
+document.addEventListener('DOMContentLoaded', renderer, false)
 
 // Hot Module Replacement API
 declare const module: NodeModule & { hot: any }
 if (module.hot) {
-    module.hot.accept('./', renderApp)
+    module.hot.accept('./', renderer)
 }

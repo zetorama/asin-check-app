@@ -8,12 +8,20 @@ import ProductsLog from './components/ProductsLog'
 import ProductDetails from './components/ProductDetails'
 
 import { StoreModel } from './models/Store'
+import { ProductModel } from './models/Product'
 
 export interface AppProps {
     store: StoreModel
 }
 
 export class App extends Component<AppProps> {
+    componentDidMount() {
+        const { store } = this.props
+        if (!store.products.length) {
+            store.fetchProductsLog()
+        }
+    }
+
     render() {
         return (
             <Container className='p-4'>
@@ -47,7 +55,7 @@ export class App extends Component<AppProps> {
         return (
             <Jumbotron>
                 <h1>Hey there!</h1>
-                <p className='lead'>If you want to see some details, pick an Amazon product by its ASIN</p>
+                <p className='lead'>If you want to see some details, pick a Product by its ASIN</p>
             </Jumbotron>
         )
     }
@@ -58,7 +66,13 @@ export class App extends Component<AppProps> {
             return this.renderJumbothron()
         }
 
-        return <ProductDetails product={viewingProduct} />
+        return <ProductDetails product={viewingProduct} onRefresh={this.handleRefresh} />
+    }
+
+    @autobind
+    handleRefresh(e: React.MouseEvent | React.FormEvent, product: ProductModel) {
+        const { store } = this.props
+        store.refreshProduct(product)
     }
 }
 

@@ -5,6 +5,7 @@ import { StoreModel } from './Store'
 export enum ProductStatus {
     Init = 'init',
     Queue = 'queue',
+    Fetch = 'fetch',
     Success = 'success',
     Nomatch = 'nomatch',
     Timeout = 'timeout',
@@ -30,13 +31,17 @@ export const Product = types
         status: types.enumeration<ProductStatus>('ProductStatus', Object.values(ProductStatus)),
         data: types.maybe(types.frozen(ProductDetails)),
 
-        createdOn: types.maybe(types.Date),
-        updatedOn: types.maybe(types.Date),
+        createdOn: types.maybe(types.string),
+        updatedOn: types.maybe(types.string),
         isViewed: false,
     })
     .views((self) => ({
         get isLoading(): boolean {
-            return self.status === ProductStatus.Init || self.status === ProductStatus.Queue
+            return (
+                self.status === ProductStatus.Init ||
+                self.status === ProductStatus.Queue ||
+                self.status === ProductStatus.Fetch
+            )
         },
         get isCurrentlyViewing(): boolean {
             // assumming, parent has an `activeProduct` as a ref
