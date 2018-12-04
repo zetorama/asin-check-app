@@ -1,27 +1,13 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "lambda",
-    "target": "es6",
-    "allowJs": false,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
     "noEmit": false,
-    "strict": true,
-    "noImplicitThis": true,
-    "strictNullChecks": true,
+    "outDir": "build",
     "lib": [
       "es2016",
     ]
   },
   "include": [
-    "src/lambda"
+    "src/lambda/*"
   ]
 }
