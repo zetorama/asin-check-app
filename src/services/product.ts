@@ -2,10 +2,13 @@ import { LookupInput, LookupOutput } from '../lambda/product-lookup'
 import { RefreshInput, RefreshOutput } from '../lambda/product-refresh'
 
 import { ProductSnapshot as Product, ProductAsin } from '../models/Product'
+import { func } from 'prop-types'
 
 export type LambdaName = 'product-lookup' | 'product-refresh'
 
 const LOCALSTORAGE_PRODUCTS_KEY = 'ASIN_PRODUCTS_LOG'
+
+const activeFetches: { [id: string]: Promise<any> } = {}
 
 export async function fetchProductsLog(): Promise<Product[] | undefined> {
     const raw = window.localStorage.getItem(LOCALSTORAGE_PRODUCTS_KEY)
@@ -33,14 +36,31 @@ export async function refreshProductsByAsins(asins: ProductAsin[]): Promise<Prod
     return fetchLambda<RefreshInput, RefreshOutput>('product-refresh', { asins })
 }
 
-export async function fetchLambda<I, O>(name: LambdaName, body?: I): Promise<O | undefined> {
-    const response = await fetch(`/.netlify/functions/${name}`, {
-        method: 'POST',
+export async function fetchLambda<I, O>(name: LambdaName, data?: I): Promise<O | undefined> {
+    const body = data ? JSON.stringify(data) : undefined
+    const fetchId = `${name}::${body}`
+
+    if (!activeFetches[fetchId]) {
+        const uri = `/.netlify/functions/${name}`
+        activeFetches[fetchId] = fetchJson(uri, body)
+        activeFetches[fetchId].then(() => delete activeFetches[fetchId])
+    }
+
+    return activeFetches[fetchId]
+}
+
+export async function fetchJson(
+    url: string,
+    body: string | undefined,
+    method: string = body ? 'POST' : 'GET',
+): Promise<object | undefined> {
+    const response = await fetch(url, {
+        body,
+        method,
         credentials: 'same-origin',
         headers: {
             'Content-Type': 'application/json; charset=utf-8',
         },
-        body: body ? JSON.stringify(body) : undefined,
     })
 
     if (!response.ok) {
