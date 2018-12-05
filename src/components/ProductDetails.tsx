@@ -45,6 +45,7 @@ export class ProductDetails extends Component<ProductProps> {
                                 color='primary'
                                 size='sm'
                                 onClick={this.handleRefresh}
+                                title='Force Product Refresh'
                             >
                                 {isLoading && 'Re-init '}
                                 Refresh

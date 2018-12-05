@@ -85,6 +85,10 @@ export const Store = types
         },
     }))
     .actions((self) => ({
+        clearProducts() {
+            self.viewProduct(undefined)
+            self.products.clear()
+        },
         saveProductsLog() {
             saveProductsLog(getSnapshot(self.products))
         },

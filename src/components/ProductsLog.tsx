@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { ListGroup } from 'reactstrap'
+import { ListGroup, Button } from 'reactstrap'
 import { observer } from 'mobx-react'
 
 import ProductLogItem from './ProductLogItem'
@@ -23,7 +23,17 @@ export class ProductsLog extends Component<ProductsLogProps> {
                     <ProductLogItem key={product.asin} product={product} onClick={this.handleItemClick} />
                 ))}
                 <ListGroupItem className='small text-muted'>
-                    <em>Showing up to {PRODUCTS_LIMIT} last products</em>
+                    <Button
+                        outline
+                        color='danger'
+                        size='sm'
+                        className='clicky'
+                        onClick={this.handleTrashClick}
+                        title='Clear Products List'
+                    >
+                        🗑
+                    </Button>
+                    <em className='ml-3'>Showing up to {PRODUCTS_LIMIT} last products</em>
                 </ListGroupItem>
             </ListGroup>
         )
@@ -33,6 +43,12 @@ export class ProductsLog extends Component<ProductsLogProps> {
     handleItemClick(e: React.MouseEvent, product: ProductAsin) {
         const { store } = this.props
         store.viewProduct(product)
+    }
+
+    @autobind
+    handleTrashClick(e: React.MouseEvent) {
+        const { store } = this.props
+        store.clearProducts()
     }
 }
 
