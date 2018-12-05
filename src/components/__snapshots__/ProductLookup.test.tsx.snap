@@ -1,0 +1,187 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ProductLookup changes input value 1`] = `
+<ProductLookup
+  defaultValue="foo bar"
+  onLookup={[MockFunction]}
+>
+  <Form
+    onSubmit={[Function]}
+    tag="form"
+  >
+    <form
+      className=""
+      onSubmit={[Function]}
+    >
+      <InputGroup
+        className="mb-3"
+        tag="div"
+      >
+        <div
+          className="mb-3 input-group"
+        >
+          <InputGroupAddon
+            addonType="prepend"
+            tag="div"
+          >
+            <div
+              className="input-group-prepend"
+            >
+              <InputGroupText
+                htmlFor="product-lookup-search-3"
+                tag="label"
+              >
+                <label
+                  className="input-group-text"
+                  htmlFor="product-lookup-search-3"
+                >
+                  ASIN
+                </label>
+              </InputGroupText>
+            </div>
+          </InputGroupAddon>
+          <Input
+            className="lookup-input text-monospace"
+            id="product-lookup-search-3"
+            onChange={[Function]}
+            pattern="(\\\\W*\\\\w{10,}\\\\W*){1,}"
+            placeholder="ABCDEFG012"
+            type="text"
+            value="xxx"
+          >
+            <input
+              className="lookup-input text-monospace form-control"
+              id="product-lookup-search-3"
+              onChange={[Function]}
+              pattern="(\\\\W*\\\\w{10,}\\\\W*){1,}"
+              placeholder="ABCDEFG012"
+              type="text"
+              value="xxx"
+            />
+          </Input>
+          <InputGroupAddon
+            addonType="append"
+            tag="div"
+          >
+            <div
+              className="input-group-append"
+            >
+              <Button
+                className="lookup-button"
+                color="primary"
+                disabled={false}
+                tag="button"
+                type="submit"
+              >
+                <button
+                  aria-label={null}
+                  className="lookup-button btn btn-primary"
+                  disabled={false}
+                  onClick={[Function]}
+                  type="submit"
+                >
+                  Find
+                </button>
+              </Button>
+            </div>
+          </InputGroupAddon>
+        </div>
+      </InputGroup>
+    </form>
+  </Form>
+</ProductLookup>
+`;
+
+exports[`ProductLookup renders with default value 1`] = `
+<Form
+  onSubmit={[Function]}
+  tag="form"
+>
+  <InputGroup
+    className="mb-3"
+    tag="div"
+  >
+    <InputGroupAddon
+      addonType="prepend"
+      tag="div"
+    >
+      <InputGroupText
+        htmlFor="product-lookup-search-2"
+        tag="label"
+      >
+        ASIN
+      </InputGroupText>
+    </InputGroupAddon>
+    <Input
+      className="lookup-input text-monospace"
+      id="product-lookup-search-2"
+      onChange={[Function]}
+      pattern="(\\\\W*\\\\w{10,}\\\\W*){1,}"
+      placeholder="ABCDEFG012"
+      type="text"
+      value="foo bar"
+    />
+    <InputGroupAddon
+      addonType="append"
+      tag="div"
+    >
+      <Button
+        className="lookup-button"
+        color="primary"
+        disabled={true}
+        tag="button"
+        type="submit"
+      >
+        Find
+      </Button>
+    </InputGroupAddon>
+  </InputGroup>
+</Form>
+`;
+
+exports[`ProductLookup renders with empty value 1`] = `
+<Form
+  onSubmit={[Function]}
+  tag="form"
+>
+  <InputGroup
+    className="mb-3"
+    tag="div"
+  >
+    <InputGroupAddon
+      addonType="prepend"
+      tag="div"
+    >
+      <InputGroupText
+        htmlFor="product-lookup-search-1"
+        tag="label"
+      >
+        ASIN
+      </InputGroupText>
+    </InputGroupAddon>
+    <Input
+      className="lookup-input text-monospace"
+      id="product-lookup-search-1"
+      onChange={[Function]}
+      pattern="(\\\\W*\\\\w{10,}\\\\W*){1,}"
+      placeholder="ABCDEFG012"
+      type="text"
+      value=""
+    />
+    <InputGroupAddon
+      addonType="append"
+      tag="div"
+    >
+      <Button
+        className="lookup-button"
+        color="primary"
+        disabled={true}
+        tag="button"
+        type="submit"
+      >
+        Find
+      </Button>
+    </InputGroupAddon>
+  </InputGroup>
+</Form>
+`;

@@ -1,0 +1,91 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Store model adds a product 1`] = `
+Object {
+  "lookingUpValue": "",
+  "products": Array [
+    Object {
+      "asin": "xxx",
+      "createdOn": undefined,
+      "data": undefined,
+      "isViewed": false,
+      "status": "new",
+      "updatedOn": undefined,
+    },
+  ],
+  "version": "0.0.0",
+  "viewingProduct": undefined,
+}
+`;
+
+exports[`Store model creates a product 1`] = `
+Object {
+  "asin": "xxx",
+  "createdOn": undefined,
+  "data": undefined,
+  "isViewed": false,
+  "status": "new",
+  "updatedOn": undefined,
+}
+`;
+
+exports[`Store model creates an empty model 1`] = `
+Object {
+  "lookingUpValue": "",
+  "products": Array [],
+  "version": "0.0.0",
+  "viewingProduct": undefined,
+}
+`;
+
+exports[`Store model creates model with two products 1`] = `
+Object {
+  "lookingUpValue": "",
+  "products": Array [
+    Object {
+      "asin": "aaa",
+      "createdOn": undefined,
+      "data": undefined,
+      "isViewed": false,
+      "status": "success",
+      "updatedOn": undefined,
+    },
+    Object {
+      "asin": "bbb",
+      "createdOn": undefined,
+      "data": undefined,
+      "isViewed": false,
+      "status": "fail",
+      "updatedOn": undefined,
+    },
+  ],
+  "version": "0.0.0",
+  "viewingProduct": undefined,
+}
+`;
+
+exports[`Store model merges updates of only existed products 1`] = `
+Object {
+  "lookingUpValue": "",
+  "products": Array [
+    Object {
+      "asin": "aaa",
+      "createdOn": undefined,
+      "data": undefined,
+      "isViewed": false,
+      "status": "success",
+      "updatedOn": undefined,
+    },
+    Object {
+      "asin": "bbb",
+      "createdOn": undefined,
+      "data": undefined,
+      "isViewed": false,
+      "status": "nomatch",
+      "updatedOn": undefined,
+    },
+  ],
+  "version": "0.0.0",
+  "viewingProduct": undefined,
+}
+`;

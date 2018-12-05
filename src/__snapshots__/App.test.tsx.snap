@@ -1,0 +1,150 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`App renders with empty store 1`] = `
+<Container
+  className="p-4"
+  tag="div"
+>
+  <Row
+    tag="div"
+  >
+    <Col
+      lg="5"
+      tag="div"
+      widths={
+        Array [
+          "xs",
+          "sm",
+          "md",
+          "lg",
+          "xl",
+        ]
+      }
+    >
+      <h2
+        className="h1"
+      >
+        Product Lookup
+      </h2>
+      <ProductLookup
+        defaultValue=""
+        onLookup={[Function]}
+      />
+      <ProductsLog
+        store={
+          Object {
+            "lookingUpValue": "",
+            "products": Array [],
+            "version": "0.0.0",
+            "viewingProduct": undefined,
+          }
+        }
+      />
+    </Col>
+    <Col
+      tag="div"
+      widths={
+        Array [
+          "xs",
+          "sm",
+          "md",
+          "lg",
+          "xl",
+        ]
+      }
+    >
+      <Jumbotron
+        tag="div"
+      >
+        <h1>
+          Hey there!
+        </h1>
+        <p
+          className="lead"
+        >
+          If you want to see some details, pick a Product by its ASIN
+        </p>
+      </Jumbotron>
+    </Col>
+  </Row>
+</Container>
+`;
+
+exports[`App renders with one product 1`] = `
+<Container
+  className="p-4"
+  tag="div"
+>
+  <Row
+    tag="div"
+  >
+    <Col
+      lg="5"
+      tag="div"
+      widths={
+        Array [
+          "xs",
+          "sm",
+          "md",
+          "lg",
+          "xl",
+        ]
+      }
+    >
+      <h2
+        className="h1"
+      >
+        Product Lookup
+      </h2>
+      <ProductLookup
+        defaultValue=""
+        onLookup={[Function]}
+      />
+      <ProductsLog
+        store={
+          Object {
+            "lookingUpValue": "",
+            "products": Array [
+              Object {
+                "asin": "XXX",
+                "createdOn": undefined,
+                "data": undefined,
+                "isViewed": false,
+                "status": "success",
+                "updatedOn": undefined,
+              },
+            ],
+            "version": "0.0.0",
+            "viewingProduct": undefined,
+          }
+        }
+      />
+    </Col>
+    <Col
+      tag="div"
+      widths={
+        Array [
+          "xs",
+          "sm",
+          "md",
+          "lg",
+          "xl",
+        ]
+      }
+    >
+      <Jumbotron
+        tag="div"
+      >
+        <h1>
+          Hey there!
+        </h1>
+        <p
+          className="lead"
+        >
+          If you want to see some details, pick a Product by its ASIN
+        </p>
+      </Jumbotron>
+    </Col>
+  </Row>
+</Container>
+`;

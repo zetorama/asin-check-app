@@ -2,12 +2,12 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 // TODO: figure out why HMR is so capricious
 // import { hot } from 'react-hot-loader'
-import { onSnapshot, getSnapshot } from 'mobx-state-tree'
+import { onSnapshot } from 'mobx-state-tree'
 import 'bootstrap/dist/css/bootstrap.css'
 
 import './index.css'
 import App from './App'
-import createStore, { ProductSnapshot, ProductStatus } from './models'
+import createStore from './models'
 import Interval from './utils/Interval'
 
 // Setup store + infinite updates

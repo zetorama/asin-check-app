@@ -1,13 +1,13 @@
 import * as React from 'react'
 import { shallow } from 'enzyme'
 
-import { App } from './App'
-import { createStore, ProductStatus } from './models'
+import { ProductsLog } from './ProductsLog'
+import { createStore, ProductStatus } from '../models'
 
-describe('App', () => {
+describe('ProductsLog', () => {
     it('renders with empty store', () => {
         const store = createStore()
-        const cmp = shallow(<App store={store} />)
+        const cmp = shallow(<ProductsLog store={store} />)
 
         expect(cmp).toMatchSnapshot()
     })
@@ -21,7 +21,7 @@ describe('App', () => {
                 },
             ],
         })
-        const cmp = shallow(<App store={store} />)
+        const cmp = shallow(<ProductsLog store={store} />)
 
         expect(cmp).toMatchSnapshot()
     })

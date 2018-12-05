@@ -48,14 +48,6 @@ export async function parseProduct(html: string): Promise<ProductDetails> {
     }
 }
 
-function updateProduct(product: Product, changes: Partial<Product>): Product {
-    return {
-        ...product,
-        updatedOn: new Date().toISOString(),
-        ...changes,
-    }
-}
-
 function extractText(el: Cheerio | CheerioElement): string {
     return cheerio(el)
         .text()

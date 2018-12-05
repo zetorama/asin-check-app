@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Product model can create a model 1`] = `
+Object {
+  "asin": "XXX",
+  "createdOn": undefined,
+  "data": Object {
+    "categories": Array [
+      "xxx",
+      "aaa",
+    ],
+    "dimensions": "1 x 2 x 3",
+    "rank": Array [
+      "1",
+      "2",
+      "3",
+    ],
+    "rating": "ok",
+    "title": "xxx aaa",
+  },
+  "isViewed": false,
+  "status": "success",
+  "updatedOn": undefined,
+}
+`;

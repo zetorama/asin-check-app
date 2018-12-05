@@ -75,8 +75,10 @@ export const Store = types
         clearLookingUpValue() {
             self.lookingUpValue = ''
         },
-        viewProduct(product: ProductModel | ProductAsin) {
-            self.viewingProduct = self.getProduct(ProductInStore.is(product) ? product.asin : product)
+        viewProduct(product?: ProductModel | ProductAsin) {
+            self.viewingProduct = product
+                ? self.getProduct(ProductInStore.is(product) ? product.asin : product)
+                : undefined
             if (self.viewingProduct && !self.viewingProduct.isViewed) {
                 self.viewingProduct.toggleViewed(true)
             }

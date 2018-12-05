@@ -1,0 +1,150 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ProductDetails renders with empty product 1`] = `
+<div
+  className="well"
+>
+  <h1>
+    ASIN 
+    <code>
+      XXX
+    </code>
+  </h1>
+  <ListGroup
+    tag="ul"
+  >
+    <ListGroupItem
+      tag="li"
+    >
+      <Alert
+        closeAriaLabel="Close"
+        color="danger"
+        fade={true}
+        isOpen={true}
+        tag="div"
+        transition={
+          Object {
+            "appear": true,
+            "baseClass": "fade",
+            "baseClassActive": "show",
+            "enter": true,
+            "exit": true,
+            "in": true,
+            "mountOnEnter": false,
+            "onEnter": [Function],
+            "onEntered": [Function],
+            "onEntering": [Function],
+            "onExit": [Function],
+            "onExited": [Function],
+            "onExiting": [Function],
+            "tag": "div",
+            "timeout": 150,
+            "unmountOnExit": true,
+          }
+        }
+      >
+        There was some fatal error during last sync. I wish I had more information
+      </Alert>
+    </ListGroupItem>
+    <InfoItem
+      label="Updated On"
+    >
+      <span
+        className="mr-2"
+      >
+        Unknown
+      </span>
+    </InfoItem>
+  </ListGroup>
+</div>
+`;
+
+exports[`ProductDetails renders with full product 1`] = `
+<div
+  className="well"
+>
+  <h1>
+    ASIN 
+    <code>
+      XXX
+    </code>
+  </h1>
+  <h2>
+    xxx aaa
+  </h2>
+  <ListGroup
+    tag="ul"
+  >
+    <InfoItem
+      label="Category"
+    >
+      xxx › aaa
+    </InfoItem>
+    <InfoItem
+      label="Best Sellers Rank"
+    >
+      <br />
+      1
+      <br />
+      2
+      <br />
+      3
+    </InfoItem>
+    <InfoItem
+      label="Product Dimensions"
+    >
+      1 x 2 x 3
+    </InfoItem>
+    <InfoItem
+      label="Rating"
+    >
+      ok
+    </InfoItem>
+    <InfoItem
+      label="Updated On"
+    >
+      <span
+        className="mr-2"
+      >
+        Unknown
+      </span>
+    </InfoItem>
+  </ListGroup>
+</div>
+`;
+
+exports[`ProductDetails renders with refresh button 1`] = `
+<div
+  className="well"
+>
+  <h1>
+    ASIN 
+    <code>
+      XXX
+    </code>
+  </h1>
+  <ListGroup
+    tag="ul"
+  >
+    <InfoItem
+      label="Updated On"
+    >
+      <span
+        className="mr-2"
+      >
+        Unknown
+      </span>
+      <Button
+        className="details-refresh"
+        color="primary"
+        onClick={[Function]}
+        outline={true}
+        size="sm"
+        tag="button"
+      >
+        Refresh
+      </Button>
+    </InfoItem>
+  </ListGroup>
+</div>
+`;

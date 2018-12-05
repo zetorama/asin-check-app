@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ProductLogItem renders with empty store 1`] = `
+<ListGroupItem
+  action={true}
+  active={false}
+  color="warning"
+  tag="li"
+>
+  <code
+    className="mr-2"
+  >
+    XXX
+  </code>
+   
+  <WarningIcon />
+</ListGroupItem>
+`;

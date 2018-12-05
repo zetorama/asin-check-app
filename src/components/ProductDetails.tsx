@@ -39,7 +39,13 @@ export class ProductDetails extends Component<ProductProps> {
                     <InfoItem label='Updated On'>
                         <span className='mr-2'>{updatedDateTime || 'Unknown'}</span>
                         {onRefresh && (
-                            <Button outline color='primary' size='sm' onClick={this.handleRefresh}>
+                            <Button
+                                className='details-refresh'
+                                outline
+                                color='primary'
+                                size='sm'
+                                onClick={this.handleRefresh}
+                            >
                                 {isLoading && 'Re-init '}
                                 Refresh
                             </Button>

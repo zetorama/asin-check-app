@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`grabber parses a book product page 1`] = `
+Object {
+  "categories": Array [
+    "Books",
+    "New, Used & Rental Textbooks",
+    "Humanities",
+  ],
+  "dimensions": "5.1 x 0.8 x 7.8",
+  "rank": Array [
+    "#4,921 in Books",
+    "#97 in Books > Romance > Historical > Regency",
+    "#172 in Books > Literature & Fiction > Classics",
+    "#16 in Books > Textbooks > Humanities > Literature",
+  ],
+  "rating": "4.6 out of 5 stars",
+  "title": "Pride and Prejudice",
+}
+`;
+
+exports[`grabber parses a card product page 1`] = `
+Object {
+  "categories": Array [
+    "Electronics",
+    "Computers & Accessories",
+    "Computer Accessories & Peripherals",
+    "Memory Cards",
+    "Micro SD Cards",
+  ],
+  "dimensions": "0.6 x 0.4 x 0.6",
+  "rank": Array [
+    "#1 in Cell Phones & Accessories",
+    "#1 in Electronics > Cell Phones & Accessories",
+    "#1 in Cell Phones & Accessories > Cell Phone Accessories > Micro SD Cards",
+  ],
+  "rating": "4.6 out of 5 stars",
+  "title": "Samsung 128GB 100MB/s (U3) MicroSD EVO Select Memory Card with Adapter (MB-ME128GA/AM)",
+}
+`;

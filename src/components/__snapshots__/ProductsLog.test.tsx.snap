@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ProductsLog renders with empty store 1`] = `""`;
+
+exports[`ProductsLog renders with one product 1`] = `
+<ListGroup
+  className="mb-3"
+  flush={true}
+  tag="ul"
+>
+  <ProductLogItem
+    key="XXX"
+    onClick={[Function]}
+    product={
+      Object {
+        "asin": "XXX",
+        "createdOn": undefined,
+        "data": undefined,
+        "isViewed": false,
+        "status": "success",
+        "updatedOn": undefined,
+      }
+    }
+  />
+  <ListGroupItem
+    className="small text-muted"
+    tag="li"
+  >
+    <em>
+      Showing up to 
+      12
+       last products
+    </em>
+  </ListGroupItem>
+</ListGroup>
+`;

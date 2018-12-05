@@ -52,12 +52,12 @@ export class ProductLookup extends Component<ProductLookupProps, ProductLookupSt
                         id={searchId}
                         pattern='(\W*\w{10,}\W*){1,}'
                         placeholder='ABCDEFG012'
-                        className='text-monospace'
+                        className='lookup-input text-monospace'
                         value={value}
                         onChange={this.handleInputChange}
                     />
                     <InputGroupAddon addonType='append'>
-                        <Button type='submit' color='primary' disabled={isBtnDisabled}>
+                        <Button type='submit' className='lookup-button' color='primary' disabled={isBtnDisabled}>
                             Find
                         </Button>
                     </InputGroupAddon>
