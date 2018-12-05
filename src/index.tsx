@@ -1,7 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { hot } from 'react-hot-loader'
-import { onSnapshot } from 'mobx-state-tree'
+// TODO: figure out why HMR is so capricious
+// import { hot } from 'react-hot-loader'
+import { onSnapshot, getSnapshot } from 'mobx-state-tree'
 import 'bootstrap/dist/css/bootstrap.css'
 
 import './index.css'
@@ -10,33 +11,27 @@ import createStore, { ProductSnapshot, ProductStatus } from './models'
 import Interval from './utils/Interval'
 
 // Setup store + infinite updates
-const store = createStore()
+let appStore = createStore()
+// TODO: switch to sockets or at least use an exponential backoff strategy
 const timer = new Interval(1000, () => {
-    const asins = store.loadingProducts.map((p) => p.asin)
+    const asins = appStore.loadingProducts.map((p) => p.asin)
     if (!asins.length) {
         timer.stop()
         return
     }
 
-    store.fetchUpdates(asins)
+    appStore.fetchUpdates(asins)
 })
-onSnapshot(store, () => {
-    store.saveProductsLog()
+onSnapshot(appStore, () => {
+    appStore.saveProductsLog()
     timer.start()
 })
 
-console.info('DELETE ME: Store is window.S')
-Object.assign(window, { S: store })
+console.info('DEBUG ME: Store is window.S')
+Object.assign(window, { S: appStore })
 
 // Setup views
-const AppRoot = () => <App store={store} />
-const Root = hot(module)(AppRoot)
+const Root = () => <App store={appStore} />
 const renderer = () => ReactDOM.render(<Root />, document.getElementById('root'))
 
 document.addEventListener('DOMContentLoaded', renderer, false)
-
-// Hot Module Replacement API
-declare const module: NodeModule & { hot: any }
-if (module.hot) {
-    module.hot.accept('./', renderer)
-}

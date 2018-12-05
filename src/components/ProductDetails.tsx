@@ -12,7 +12,7 @@ const InfoItem = ({ label, children }: { label: string; children: React.ReactNod
     </ListGroupItem>
 )
 
-const EmptyValue = () => <>—</>
+const EmptyValue = () => <>n/a</>
 
 export interface ProductProps {
     product: ProductModel
@@ -22,24 +22,25 @@ export interface ProductProps {
 export class ProductDetails extends Component<ProductProps> {
     render() {
         const { onRefresh, product } = this.props
-        const { isLoading, asin, data, updatedOn } = product
-
-        const updated = updatedOn || 'Unknown'
+        const { isLoading, asin, data, updatedDateTime } = product
 
         return (
             <div className='well'>
                 <h1>
-                    ASIN
-                    <code className='mx-2'>{asin}</code>
-                    {isLoading && 'is refreshing…'}
+                    {/* explicit spacing just makes text select easier */}
+                    {'ASIN '}
+                    <code>{asin}</code>
+                    {isLoading && ' is refreshing…'}
                 </h1>
                 {this.renderTitle()}
                 <ListGroup className={(isLoading && 'text-muted') || undefined}>
                     {data ? this.renderDetails() : this.renderExcuse()}
+
                     <InfoItem label='Updated On'>
-                        <span className='mr-2'>{updated}</span>
+                        <span className='mr-2'>{updatedDateTime || 'Unknown'}</span>
                         {onRefresh && (
-                            <Button outline color='primary' size='sm' disabled={isLoading} onClick={this.handleRefresh}>
+                            <Button outline color='primary' size='sm' onClick={this.handleRefresh}>
+                                {isLoading && 'Re-init '}
                                 Refresh
                             </Button>
                         )}
@@ -92,6 +93,7 @@ export class ProductDetails extends Component<ProductProps> {
         const { data } = this.props.product
         if (!data) return null
 
+        const rating = data.rating || <EmptyValue />
         const dimensions = data.dimensions || <EmptyValue />
         const categories = data.categories && data.categories.length ? data.categories.join(' › ') : <EmptyValue />
         const ranks =
@@ -111,6 +113,7 @@ export class ProductDetails extends Component<ProductProps> {
                 <InfoItem label='Category'>{categories}</InfoItem>
                 <InfoItem label='Best Sellers Rank'>{ranks}</InfoItem>
                 <InfoItem label='Product Dimensions'>{dimensions}</InfoItem>
+                <InfoItem label='Rating'>{rating}</InfoItem>
             </>
         )
     }

@@ -1,12 +1,9 @@
-import { types, getSnapshot, applySnapshot, Instance, SnapshotIn } from 'mobx-state-tree'
+import { types, getParent, getSnapshot, applySnapshot, Instance, SnapshotIn } from 'mobx-state-tree'
 
+import { fetchProductsLog, saveProductsLog, fetchProductsByAsins, refreshProductsByAsins } from '../services/product'
 import { Product, ProductAsin, ProductModel, ProductStatus, ProductSnapshot } from './Product'
 
-import { LookupInput, LookupOutput } from '../lambda/product-lookup'
-import { RefreshInput, RefreshOutput } from '../lambda/product-refresh'
-
-const LOCALSTORAGE_PRODUCTS_KEY = 'ASIN_PRODUCTS_LOG'
-const PRODUCTS_LIMIT = 12
+export const PRODUCTS_LIMIT = 12
 
 export type StoreModel = Instance<typeof Store>
 export type StoreSnapshot = SnapshotIn<typeof Store>
@@ -16,11 +13,24 @@ type Void<T> = { [P in keyof T]?: undefined }
 const resetObj = <T>(source: T): Void<T> =>
     Object.keys(source).reduce((all, one) => Object.assign(all, { [one]: undefined }), {})
 
+export const ProductInStore = types.compose(
+    Product,
+    types.model('ProductInStore').views((self) => ({
+        get isCurrentlyViewing(): boolean {
+            // assumming, parent has an `activeProduct` as a ref
+            return getParent<StoreModel>(self, 2).viewingProduct === self
+        },
+    })),
+)
+
+export type ProductInStoreModel = Instance<typeof ProductInStore>
+export type ProductInStoreSnapshot = SnapshotIn<typeof ProductInStore>
+
 export const Store = types
     .model('AppStore', {
         version: '0.0.0',
-        products: types.array(Product),
-        viewingProduct: types.maybe(types.reference(Product)),
+        products: types.array(ProductInStore),
+        viewingProduct: types.maybe(types.reference(ProductInStore)),
         lookingUpValue: types.optional(types.string, ''),
     })
     .views((self) => ({
@@ -38,30 +48,35 @@ export const Store = types
                 const product = self.getProduct(update.asin)
                 if (product) {
                     applySnapshot(product, Object.assign(resetObj(product), update))
+
+                    if (product === self.viewingProduct) {
+                        // Mark as seen, as its currently opened
+                        product.toggleViewed(true)
+                    }
                 }
             }
         },
-        createProduct(asin: ProductAsin): ProductModel {
+        createProduct(asin: ProductAsin): ProductInStoreModel {
             const product = self.getProduct(asin)
             const defaults = product ? getSnapshot(product) : undefined
-            return Product.create({
+            return ProductInStore.create({
                 ...defaults,
                 asin,
-                status: ProductStatus.Init,
+                status: ProductStatus.New,
             })
         },
         addProducts(products: ProductModel[]) {
             if (!products || !Array.isArray(products) || !products.length) return
 
             const oldProducts = self.products.filter((p1) => !products.find((p2) => p1.asin === p2.asin))
-            const newProducts = products.concat(oldProducts).slice(0, PRODUCTS_LIMIT)
+            const newProducts: ProductInStoreModel[] = products.concat(oldProducts).slice(0, PRODUCTS_LIMIT)
             self.products.replace(newProducts)
         },
         clearLookingUpValue() {
             self.lookingUpValue = ''
         },
         viewProduct(product: ProductModel | ProductAsin) {
-            self.viewingProduct = self.getProduct(Product.is(product) ? product.asin : product)
+            self.viewingProduct = self.getProduct(ProductInStore.is(product) ? product.asin : product)
             if (self.viewingProduct && !self.viewingProduct.isViewed) {
                 self.viewingProduct.toggleViewed(true)
             }
@@ -69,18 +84,11 @@ export const Store = types
     }))
     .actions((self) => ({
         saveProductsLog() {
-            window.localStorage.setItem(LOCALSTORAGE_PRODUCTS_KEY, JSON.stringify(getSnapshot(self.products)))
+            saveProductsLog(getSnapshot(self.products))
         },
         async fetchProductsLog() {
-            const raw = window.localStorage.getItem(LOCALSTORAGE_PRODUCTS_KEY)
-            if (!raw) return
-
-            try {
-                self.products.replace(JSON.parse(raw))
-            } catch (err) {
-                console.error(`Cannot parse ${LOCALSTORAGE_PRODUCTS_KEY} from localStorage`, err)
-                window.localStorage.removeItem(LOCALSTORAGE_PRODUCTS_KEY)
-            }
+            const products = (await fetchProductsLog()) as ProductModel[]
+            products && products.length && self.addProducts(products)
         },
         async lookup(value: string) {
             self.lookingUpValue = String(value || '')
@@ -93,58 +101,23 @@ export const Store = types
 
                 self.viewingProduct = undefined
                 await self.addProducts(products)
+
+                // switch to a newly added product
                 self.viewProduct(self.products[0])
                 self.clearLookingUpValue()
             }
         },
         async fetchUpdates(asins: ProductAsin[] = self.loadingProducts.map((p) => p.asin)) {
-            const body: LookupInput = { asins }
-            const response = await fetch('/.netlify/functions/product-lookup', {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: {
-                    'Content-Type': 'application/json; charset=utf-8',
-                },
-                body: JSON.stringify(body),
-            })
-
-            if (!response.ok) {
-                console.error(`Failed refreshLog()`, body)
-                console.error(response.status, response.statusText, await response.text())
-                // no recover
-                return
-            }
-
-            const update: LookupOutput = await response.json()
-            self.mergeUpdates(update as ProductSnapshot[])
-
-            // TODO: server should call for refresh by itself
-            for (const product of update) {
-                if (product.status === ProductStatus.Queue) {
-                    ;(self as StoreModel).refreshProduct(product as ProductSnapshot)
-                }
-            }
+            const update = await fetchProductsByAsins(asins)
+            update && self.mergeUpdates(update)
         },
-        async refreshProduct(product: ProductSnapshot) {
-            const body: RefreshInput = { asin: product.asin }
-            const response = await fetch('/.netlify/functions/product-refresh', {
-                method: 'POST',
-                credentials: 'same-origin',
-                headers: {
-                    'Content-Type': 'application/json; charset=utf-8',
-                },
-                body: JSON.stringify(body),
-            })
-
-            if (!response.ok) {
-                console.error(`Failed refreshProduct()`, body)
-                console.error(response.status, response.statusText, await response.text())
-                // no recover
-                return
+        async refreshProducts(asins: ProductAsin[]) {
+            for (const asin of asins) {
+                const product = self.getProduct(asin)
+                product && product.setStatus(ProductStatus.InQueue)
             }
-
-            const update: RefreshOutput = await response.json()
-            self.mergeUpdates([update] as ProductSnapshot[])
+            const update = await refreshProductsByAsins(asins)
+            update && self.mergeUpdates(update)
         },
     }))
 

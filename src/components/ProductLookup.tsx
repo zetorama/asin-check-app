@@ -14,6 +14,8 @@ export interface ProductLookupState {
     value: string
 }
 
+let formId = 0
+
 export class ProductLookup extends Component<ProductLookupProps, ProductLookupState> {
     static getDerivedStateFromProps(props: ProductLookupProps, state: ProductLookupState): ProductLookupState | null {
         if (props.defaultValue !== state.defaultValue) {
@@ -26,6 +28,8 @@ export class ProductLookup extends Component<ProductLookupProps, ProductLookupSt
         return null
     }
 
+    private formId = ++formId
+
     state: ProductLookupState = {
         value: '',
     }
@@ -34,20 +38,26 @@ export class ProductLookup extends Component<ProductLookupProps, ProductLookupSt
         const { value, defaultValue } = this.state
         const isBtnDisabled = !value || value === defaultValue
 
+        const searchId = `product-lookup-search-${this.formId}`
+
         return (
             <Form onSubmit={this.handleLookup}>
                 <InputGroup className='mb-3'>
                     <InputGroupAddon addonType='prepend'>
-                        <InputGroupText>ASIN</InputGroupText>
+                        <InputGroupText tag='label' htmlFor={searchId}>
+                            ASIN
+                        </InputGroupText>
                     </InputGroupAddon>
                     <Input
+                        id={searchId}
+                        pattern='(\W*\w{10,}\W*){1,}'
                         placeholder='ABCDEFG012'
                         className='text-monospace'
                         value={value}
                         onChange={this.handleInputChange}
                     />
                     <InputGroupAddon addonType='append'>
-                        <Button color='primary' disabled={isBtnDisabled}>
+                        <Button type='submit' color='primary' disabled={isBtnDisabled}>
                             Find
                         </Button>
                     </InputGroupAddon>

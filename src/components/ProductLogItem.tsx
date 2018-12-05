@@ -17,7 +17,7 @@ export class ProductLogItem extends Component<ProductLogItemProps> {
     render() {
         const { product, onClick } = this.props
         const color =
-            product.status === ProductStatus.Queue || product.status === ProductStatus.Init
+            product.status === ProductStatus.InQueue || product.status === ProductStatus.New
                 ? 'info'
                 : product.isViewed
                 ? undefined
@@ -26,15 +26,13 @@ export class ProductLogItem extends Component<ProductLogItemProps> {
                 : 'warning'
 
         const icon =
-            product.status === ProductStatus.Queue || product.status === ProductStatus.Init ? (
+            product.status === ProductStatus.InQueue || product.status === ProductStatus.New ? (
                 <LoadingIcon />
             ) : product.status !== ProductStatus.Success ? (
                 <WarningIcon />
             ) : null
 
         const isActive = product.isCurrentlyViewing
-        const title = String((product.data && product.data.title) || '')
-        const label = title && <small className='mr-2'>{title.length > 21 ? title.substr(0, 20) + '…' : title}</small>
 
         return (
             <ListGroupItem
@@ -45,9 +43,31 @@ export class ProductLogItem extends Component<ProductLogItemProps> {
                 className={onClick && 'clicky'}
             >
                 <code className='mr-2'>{product.asin}</code>
-                {label}
+                {' ' /* explicit spacing makes text read/select easier */}
+                {this.renderTitle()}
                 {icon}
             </ListGroupItem>
+        )
+    }
+
+    renderTitle() {
+        const { data } = this.props.product
+        if (!data || !data.title) return ''
+
+        // TODO: change layout/CSS to use `text-overflow` for title/category trimming
+        const label = data.title.length > 21 ? data.title.substr(0, 20) + '…' : data.title
+        const category =
+            data.categories && data.categories.length ? (
+                <em className='ml-1 text-nowrap'>‹ {data.categories[0]}</em>
+            ) : (
+                undefined
+            )
+
+        return (
+            <small className='mr-2'>
+                {label}
+                {category}
+            </small>
         )
     }
 

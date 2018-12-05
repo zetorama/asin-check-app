@@ -72,7 +72,7 @@ export class App extends Component<AppProps> {
     @autobind
     handleRefresh(e: React.MouseEvent | React.FormEvent, product: ProductModel) {
         const { store } = this.props
-        store.refreshProduct(product)
+        store.refreshProducts([product.asin])
     }
 }
 

@@ -1,16 +1,11 @@
-import { getParent, types, Instance, SnapshotIn } from 'mobx-state-tree'
+import { types, Instance, SnapshotIn } from 'mobx-state-tree'
 
-import { StoreModel } from './Store'
+import ProductStatus from './ProductStatus'
 
-export enum ProductStatus {
-    Init = 'init',
-    Queue = 'queue',
-    Fetch = 'fetch',
-    Success = 'success',
-    Nomatch = 'nomatch',
-    Timeout = 'timeout',
-    Fail = 'fail',
-}
+export { ProductStatus }
+
+export type ProductDetailsModel = Instance<typeof ProductDetails>
+export type ProductDetailsSnapshot = SnapshotIn<typeof ProductDetails>
 
 export const ProductDetails = types.model('ProductDetails', {
     title: types.string,
@@ -36,21 +31,36 @@ export const Product = types
         isViewed: false,
     })
     .views((self) => ({
+        // NOTE: an "abstract" method to simplify typings (see implementation in './Store')
+        get isCurrentlyViewing(): boolean {
+            return false
+        },
+        get createdDateTime(): string {
+            if (!self.createdOn) return ''
+
+            const date = new Date(self.createdOn)
+            return `${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`
+        },
+        get updatedDateTime(): string {
+            if (!self.updatedOn) return ''
+
+            const date = new Date(self.updatedOn)
+            return `${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`
+        },
         get isLoading(): boolean {
             return (
-                self.status === ProductStatus.Init ||
-                self.status === ProductStatus.Queue ||
-                self.status === ProductStatus.Fetch
+                self.status === ProductStatus.New ||
+                self.status === ProductStatus.InQueue ||
+                self.status === ProductStatus.Refreshing
             )
-        },
-        get isCurrentlyViewing(): boolean {
-            // assumming, parent has an `activeProduct` as a ref
-            return getParent<StoreModel>(self, 2).viewingProduct === self
         },
     }))
     .actions((self) => ({
         toggleViewed(setAsViewed: boolean = !self.isViewed) {
             self.isViewed = setAsViewed
+        },
+        setStatus(status: ProductStatus) {
+            self.status = status
         },
     }))
 
