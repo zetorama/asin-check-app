@@ -13,7 +13,6 @@ export async function lookupProducts(asins: ProductAsin[]): Promise<Product[]> {
     const result = await col.find({
         asin: { $in: asins },
     })
-    console.log(`lookupProducts: Find result`, await result.count())
 
     const products: Product[] = await result.toArray()
     console.log(`lookupProducts: Found ${products.length} product(s)`)
