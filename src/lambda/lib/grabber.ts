@@ -1,72 +1,20 @@
 import cheerio from 'cheerio'
 import fetch, { Response } from 'node-fetch'
+import { ProductAsin, ProductSnapshot as Product, ProductDetailsSnapshot as ProductDetails } from '../../models/Product'
 
-export type ASIN = string
+export type ParsedDetails = Partial<ProductDetails>
 
-export enum GrabStatus {
-    Queue = 'queue',
-    Success = 'success',
-    Nomatch = 'nomatch',
-    Timeout = 'timeout',
-    Fail = 'fail',
-}
-
-export interface ProductDetails {
-    readonly title: string
-    readonly categories: ReadonlyArray<string>
-    readonly rating: string
-    readonly rank?: ReadonlyArray<string>
-    readonly dimensions?: string
-    // readonly dimensions?: {
-    //     readonly l: number,
-    //     readonly w: number,
-    //     readonly h: number,
-    // },
-}
-
-export type ParsedProdDetails = Partial<ProductDetails>
-
-export interface GrabbedProduct {
-    readonly asin: ASIN
-    readonly status: GrabStatus
-    readonly data?: ProductDetails
-    readonly createdOn: Date
-    readonly updatedOn?: Date
-}
-
-export const AMAZON_BASE_URL = 'https://www.amazon.com/dp'
+export const GRAB_BASE_URL = 'https://www.amazon.com/dp'
 // It seems, googlebot gets a bit less data
 // But, is it good to use it?
-export const USER_AGENT = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+export const GRAB_USER_AGENT = 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
 
-export async function grabProduct(asin: ASIN): Promise<GrabbedProduct> {
-    const product: GrabbedProduct = {
-        asin,
-        createdOn: new Date(),
-        status: GrabStatus.Queue,
-    }
-
-    const res = await fetchProduct(asin)
-    if (!res.ok) {
-        return updateProduct(product, {
-            status: res.status === 404 ? GrabStatus.Nomatch : GrabStatus.Fail,
-        })
-    }
-
-    const html = await res.text()
-    const data = await parseProduct(html)
-    return updateProduct(product, {
-        data,
-        status: GrabStatus.Success,
-    })
-}
-
-export async function fetchProduct(asin: ASIN): Promise<Response> {
-    const url = `${AMAZON_BASE_URL}/${asin}`
+export async function fetchProduct(asin: ProductAsin): Promise<Response> {
+    const url = `${GRAB_BASE_URL}/${asin}`
     return fetch(url, {
         headers: {
             Accept: 'text/html',
-            'User-Agent': USER_AGENT,
+            'User-Agent': GRAB_USER_AGENT,
         },
     })
 }
@@ -74,7 +22,7 @@ export async function fetchProduct(asin: ASIN): Promise<Response> {
 export async function parseProduct(html: string): Promise<ProductDetails> {
     const $ = cheerio.load(html)
 
-    let data: ParsedProdDetails =
+    let data: ParsedDetails =
         // tslint:disable-next-line:prefer-object-spread
         $('.prodDetTable')
             .toArray()
@@ -83,28 +31,27 @@ export async function parseProduct(html: string): Promise<ProductDetails> {
     if (!Object.keys(data).length) {
         // so, there is no details table in html…
         // assume, there is an older format
-        data = lookupDetailsList($('#productDetailsTable'))
+        data = lookupDetailsList($('#productDetailsTable, #detail-bullets'))
     }
+
+    const $title = $('#title')
 
     return {
         ...data,
         // tslint:disable-next-line:variable-name
-        categories: $('#wayfinding-breadcrumbs_feature_div a')
+        categories: $('#wayfinding-breadcrumbs_feature_div')
+            .find('a')
             .map((_i, el) => extractText(el))
             .get(),
-        rating: $('#acrPopover')
-            .attr('title')
-            .trim(),
-        title: $('#productTitle')
-            .text()
-            .trim(),
+        rating: String($('#acrPopover').attr('title') || '').trim(),
+        title: String($title.find('span:first-child').text() || $title.text() || '').trim(),
     }
 }
 
-function updateProduct(product: GrabbedProduct, changes: Partial<GrabbedProduct>): GrabbedProduct {
+function updateProduct(product: Product, changes: Partial<Product>): Product {
     return {
         ...product,
-        updatedOn: new Date(),
+        updatedOn: new Date().toISOString(),
         ...changes,
     }
 }
@@ -115,7 +62,7 @@ function extractText(el: Cheerio | CheerioElement): string {
         .trim()
 }
 
-function lookupDetailsList(el: Cheerio | CheerioElement): ParsedProdDetails {
+function lookupDetailsList(el: Cheerio | CheerioElement): ParsedDetails {
     const $el = cheerio(el)
 
     const data: Partial<ProductDetails> = {}
@@ -141,10 +88,10 @@ function lookupDetailsList(el: Cheerio | CheerioElement): ParsedProdDetails {
     return data
 }
 
-function lookupDetailsTable(el: Cheerio | CheerioElement): ParsedProdDetails {
+function lookupDetailsTable(el: Cheerio | CheerioElement): ParsedDetails {
     const $el = cheerio(el)
 
-    const data: ParsedProdDetails = {}
+    const data: ParsedDetails = {}
     for (const row of $el.find('tr').toArray()) {
         const $label = cheerio(row).find('th')
         const labelText = $label.text().trim()
@@ -169,7 +116,8 @@ function extractDimensions(el: Cheerio | CheerioElement): ProductDetails['dimens
         .text()
         .trim()
     const re = /([0-9.]+)\s*x\s*([0-9.]+)\s*x\s*([0-9.]+)/m
-    return re.test(value) ? value : undefined
+    const match = value.match(re)
+    return (match && match[0]) || undefined
 
     // const [, l, w, h] = (value.match(re) || []) as ReadonlyArray<string>
 

@@ -1,23 +1,17 @@
-import { Handler } from './lib/lamda-handler'
-import { grabProduct } from './lib/grabber'
+import { Handler } from 'aws-lambda'
 
-// NOTE: nelify library doesn't compile with next import:
-// import {ProductSnapshot, ProductStatus} from '../models/Product'
-// So, immitate
-interface ProductSnapshot {
-    asin: string
-    status: 'init' | 'queue' | 'fetch' | 'success' | 'nomatch' | 'timeout' | 'fail'
-}
+import { ProductAsin, ProductSnapshot as Product } from '../models/Product'
+import { refreshProducts } from './lib/services'
 
-export type RefreshOutput = ProductSnapshot
 export interface RefreshInput {
-    asin: string
+    asins: ProductAsin[]
 }
+export type RefreshOutput = Product[]
 
 export const handler: Handler = async (event, context, callback) => {
-    const { asin } = JSON.parse(event.body) as RefreshInput
+    const { asins } = JSON.parse(event.body) as RefreshInput
 
-    if (!asin) {
+    if (!asins) {
         return callback(null, {
             statusCode: 404,
             body: '',
@@ -25,14 +19,14 @@ export const handler: Handler = async (event, context, callback) => {
     }
 
     try {
-        const result: RefreshOutput = await grabProduct(asin)
+        const result: RefreshOutput = await refreshProducts(asins)
         callback(null, {
             statusCode: 200,
             body: JSON.stringify(result),
         })
     } catch (err) {
         callback(err, {
-            statusCode: 200,
+            statusCode: 500,
             body: JSON.stringify(err),
         })
     }
