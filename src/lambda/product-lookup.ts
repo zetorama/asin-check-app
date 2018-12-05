@@ -11,8 +11,10 @@ export type LookupOutput = Product[]
 
 const isNew = (product: Product): boolean => product.status === ProductStatus.New
 
-export const handler: Handler = async (event, _context, callback) => {
-    const { asins = [], skipRefresh = false } = JSON.parse(event.body || '') as LookupInput
+export const handler: Handler = async (event, context, callback) => {
+    // https://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-context.html
+    context.callbackWaitsForEmptyEventLoop = false
+    const { asins = [], skipRefresh = false } = event.body ? JSON.parse(event.body) : ({} as LookupInput)
     let products: LookupOutput = []
 
     if (!asins || !asins.length) {

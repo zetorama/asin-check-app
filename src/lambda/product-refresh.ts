@@ -9,9 +9,11 @@ export interface RefreshInput {
 export type RefreshOutput = Product[]
 
 export const handler: Handler = async (event, context, callback) => {
-    const { asins } = JSON.parse(event.body) as RefreshInput
+    // https://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-context.html
+    context.callbackWaitsForEmptyEventLoop = false
+    const { asins = [] } = event.body ? JSON.parse(event.body) : ({} as RefreshInput)
 
-    if (!asins) {
+    if (!asins || !asins.length) {
         return callback(null, {
             statusCode: 404,
             body: '',
